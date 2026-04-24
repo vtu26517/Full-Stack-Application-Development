@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Job Portal</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <style>
+        .hero {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: calc(100vh - 80px);
+            text-align: center;
+            padding: 2rem;
+        }
+        .hero h1 {
+            font-size: 3.5rem;
+            margin-bottom: 1rem;
+            font-weight: 800;
+            background: -webkit-linear-gradient(#fff, #e2e8f0);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .hero p {
+            font-size: 1.25rem;
+            margin-bottom: 2rem;
+            color: rgba(255, 255, 255, 0.8);
+            max-width: 600px;
+        }
+        .hero-actions {
+            display: flex;
+            gap: 1.5rem;
+        }
+        .hero-actions .btn {
+            padding: 1rem 2.5rem;
+            font-size: 1.1rem;
+        }
+    </style>
+</head>
+<body>
+
+<nav class="glass-nav">
+    <h2>🚀 JobPortal</h2>
+    <div class="nav-links">
+        <a th:href="@{/login}">Login</a>
+        <a th:href="@{/register}" class="btn">Sign Up</a>
+    </div>
+</nav>
+
+<div class="hero">
+    <h1>Find Your Dream Job Today</h1>
+    <p>A smart platform connecting passionate job seekers with innovative employers. Build your future, one step at a time.</p>
+    
+    <div class="hero-actions">
+        <a th:href="@{/register}" class="btn">Get Started</a>
+        <a th:href="@{/login}" class="btn btn-secondary">I already have an account</a>
+    </div>
+</div>
+
+</body>
+</html>

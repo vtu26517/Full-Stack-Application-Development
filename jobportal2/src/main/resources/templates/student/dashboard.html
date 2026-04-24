@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Student Dashboard - Job Portal</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <script>
+        function triggerApply(jobId) {
+            document.getElementById('apply-form-' + jobId).style.display = 'block';
+        }
+    </script>
+</head>
+<body>
+
+<nav class="glass-nav">
+    <h2>🚀 JobPortal <span style="font-size: 1rem; color: #cbd5e1; font-weight: normal; margin-left: 10px;">Student Panel</span></h2>
+    <div class="nav-links" style="display: flex; align-items: center;">
+        <form th:action="@{/student/dashboard}" method="get" style="display: flex; gap: 0.5rem; margin-right: 2rem;">
+            <input type="text" name="search" class="form-control" placeholder="Search jobs or skills..." style="padding: 0.4rem 1rem;" th:value="${param.search}">
+            <button type="submit" class="btn" style="padding: 0.4rem 1rem;">Search</button>
+        </form>
+        <span th:text="${student.fullName}" style="margin-right: 1.5rem; font-weight: 600;"></span>
+        <form th:action="@{/logout}" method="post" style="display:inline;">
+            <button type="submit" class="btn btn-secondary" style="padding: 0.5rem 1rem;">Logout</button>
+        </form>
+    </div>
+</nav>
+
+<div class="dashboard-container">
+    
+    <div th:if="${param.success}" class="alert alert-success">
+        Application submitted successfully!
+    </div>
+    <div th:if="${param.alreadyApplied}" class="alert alert-error">
+        You have already applied for this job.
+    </div>
+    <div th:if="${param.error}" class="alert alert-error">
+        An error occurred during application processing.
+    </div>
+
+    <div style="display: flex; gap: 2rem; flex-wrap: wrap;">
+        
+        <!-- Available Jobs List -->
+        <div class="glass-container" style="flex: 2; min-width: 400px; padding: 1.5rem;">
+            <h3 style="margin-bottom: 1.5rem;">Available Opportunities</h3>
+            
+            <div style="display: flex; flex-direction: column; gap: 1rem;">
+                <div th:each="job : ${jobs}" style="background: rgba(255,255,255,0.05); padding: 1.5rem; border-radius: 12px; border: 1px solid rgba(255,255,255,0.1);">
+                    <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+                        <div>
+                            <h4 th:text="${job.title}" style="color: #6ee7b7; font-size: 1.2rem; margin-bottom: 0.25rem;"></h4>
+                            <p th:text="${job.employer.companyName}" style="font-size: 0.9rem; color: #cbd5e1; margin-bottom: 1rem;"></p>
+                        </div>
+                        <span style="font-weight: 600; color: #fcd34d;">$[[${job.salary}]]</span>
+                    </div>
+                    
+                    <p th:text="${job.description}" style="font-size: 0.95rem; margin-bottom: 1rem; line-height: 1.5;"></p>
+                    
+                    <div style="margin-bottom: 1rem;">
+                        <strong>Skills: </strong> <span th:text="${job.skillsRequired}" style="color: #e2e8f0; font-size: 0.9rem;"></span>
+                    </div>
+
+                    <button class="btn" th:onclick="'triggerApply(' + ${job.id} + ')'" style="padding: 0.5rem 1rem; font-size: 0.9rem;">Apply Now</button>
+                    
+                    <!-- Hidden Apply Form, shown when 'Apply Now' is clicked -->
+                    <form th:id="'apply-form-' + ${job.id}" th:action="@{'/student/job/apply/' + ${job.id}}" method="post" enctype="multipart/form-data" style="display: none; margin-top: 1rem; padding-top: 1rem; border-top: 1px solid rgba(255,255,255,0.1);">
+                        <div class="form-group">
+                            <label>Upload Resume (PDF/DOCX)</label>
+                            <input type="file" name="resume" class="form-control" style="background: transparent; border: none; padding: 0;" required>
+                        </div>
+                        <button type="submit" class="btn btn-secondary" style="background: #10b981; margin-top: 0.5rem; padding: 0.5rem 1rem; font-size: 0.9rem;">Submit Application</button>
+                    </form>
+                </div>
+                
+                <div th:if="${#lists.isEmpty(jobs)}" style="text-align: center; color: rgba(255,255,255,0.7); padding: 2rem;">
+                    No jobs found. Try adjusting your search.
+                </div>
+            </div>
+        </div>
+
+        <!-- My Applications -->
+        <div class="glass-container" style="flex: 1; min-width: 300px; padding: 1.5rem; max-height: 80vh; overflow-y: auto;">
+            <h3 style="margin-bottom: 1.5rem;">My Applications</h3>
+            
+            <div th:each="app : ${myApplications}" style="background: rgba(255,255,255,0.05); padding: 1rem; border-radius: 8px; margin-bottom: 1rem;">
+                <h5 th:text="${app.job.title}" style="margin-bottom: 0.25rem;"></h5>
+                <p th:text="${app.job.employer.companyName}" style="font-size: 0.85rem; color: rgba(255,255,255,0.7); margin-bottom: 0.5rem;"></p>
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <span th:class="'status-badge status-' + ${#strings.toLowerCase(app.status)}" th:text="${app.status}"></span>
+                    <span style="font-size: 0.75rem; color: rgba(255,255,255,0.5);" th:text="${#temporals.format(app.appliedAt, 'dd MMM yyyy')}"></span>
+                </div>
+            </div>
+            
+            <div th:if="${#lists.isEmpty(myApplications)}" style="text-align: center; color: rgba(255,255,255,0.7);">
+                You haven't applied to any jobs yet.
+            </div>
+        </div>
+
+    </div>
+</div>
+
+</body>
+</html>

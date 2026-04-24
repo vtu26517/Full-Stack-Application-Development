@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Applicants - Job Portal</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+
+<nav class="glass-nav">
+    <h2>🚀 JobPortal <span style="font-size: 1rem; color: #cbd5e1; font-weight: normal; margin-left: 10px;">Employer Panel</span></h2>
+    <div class="nav-links">
+        <a th:href="@{/employer/dashboard}" class="btn btn-secondary" style="margin-right: 1rem; padding: 0.5rem 1rem;">Back to Dashboard</a>
+        <span th:text="${#authentication.principal.user.companyName}" style="margin-right: 1.5rem; font-weight: 600;"></span>
+    </div>
+</nav>
+
+<div class="dashboard-container">
+    <div class="glass-container">
+        <h2 style="margin-bottom: 0.5rem;">Applicants for: <span th:text="${job.title}" style="color: #6ee7b7;"></span></h2>
+        <p style="color: rgba(255,255,255,0.7); margin-bottom: 2rem;">Review and manage candidates below.</p>
+
+        <div style="overflow-x: auto;">
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Candidate Name</th>
+                        <th>Email</th>
+                        <th>Applied On</th>
+                        <th>Resume</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="app : ${applications}">
+                        <td th:text="${app.student.fullName}">John Doe</td>
+                        <td th:text="${app.student.email}">john@example.com</td>
+                        <td th:text="${#temporals.format(app.appliedAt, 'dd MMM yyyy')}">Date</td>
+                        <td>
+                            <a th:href="@{'/uploads/' + ${app.resumePath}}" target="_blank" style="color: #6ee7b7; text-decoration: none;">View Resume</a>
+                        </td>
+                        <td>
+                            <span th:class="'status-badge status-' + ${#strings.toLowerCase(app.status)}" th:text="${app.status}"></span>
+                        </td>
+                        <td>
+                            <form th:action="@{'/employer/application/' + ${app.id} + '/status'}" method="post" style="display: flex; gap: 0.5rem;">
+                                <input type="hidden" name="status" value="SHORTLISTED">
+                                <button type="submit" class="btn" style="padding: 0.3rem 0.6rem; font-size: 0.8rem; background: #10b981;" th:disabled="${app.status == 'SHORTLISTED'}">Shortlist</button>
+                            </form>
+                            <form th:action="@{'/employer/application/' + ${app.id} + '/status'}" method="post" style="display: flex; gap: 0.5rem; margin-top: 0.5rem;">
+                                <input type="hidden" name="status" value="REJECTED">
+                                <button type="submit" class="btn btn-secondary" style="padding: 0.3rem 0.6rem; font-size: 0.8rem; background: rgba(239, 68, 68, 0.5);" th:disabled="${app.status == 'REJECTED'}">Reject</button>
+                            </form>
+                        </td>
+                    </tr>
+                    <tr th:if="${#lists.isEmpty(applications)}">
+                        <td colspan="6" style="text-align: center; color: rgba(255,255,255,0.7);">No applications yet.</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

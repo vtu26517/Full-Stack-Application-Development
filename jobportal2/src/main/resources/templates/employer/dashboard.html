@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Employer Dashboard - Job Portal</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+
+<nav class="glass-nav">
+    <h2>🚀 JobPortal <span style="font-size: 1rem; color: #cbd5e1; font-weight: normal; margin-left: 10px;">Employer Panel</span></h2>
+    <div class="nav-links">
+        <span th:text="${employer.companyName}" style="margin-right: 1.5rem; font-weight: 600;"></span>
+        <form th:action="@{/logout}" method="post" style="display:inline;">
+            <button type="submit" class="btn btn-secondary" style="padding: 0.5rem 1rem;">Logout</button>
+        </form>
+    </div>
+</nav>
+
+<div class="dashboard-container">
+    
+    <div th:if="${param.success}" class="alert alert-success">
+        Action completed successfully!
+    </div>
+    
+    <div class="stats-grid">
+        <div class="glass-container stat-card" style="padding: 1.5rem;">
+            <h3 th:text="${#lists.size(jobs)}">0</h3>
+            <p>Active Jobs</p>
+        </div>
+        <div class="glass-container stat-card" style="padding: 1.5rem;">
+            <h3 th:text="${totalApplications}">0</h3>
+            <p>Total Applications</p>
+        </div>
+        <div class="glass-container stat-card" style="padding: 1.5rem;">
+            <h3 th:text="${shortlistedCandidates}">0</h3>
+            <p>Shortlisted</p>
+        </div>
+    </div>
+
+    <div style="display: flex; gap: 2rem; flex-wrap: wrap;">
+        
+        <!-- Post Job Form -->
+        <div class="glass-container" style="flex: 1; min-width: 300px;">
+            <h3 style="margin-bottom: 1.5rem;">Post a New Job</h3>
+            <form th:action="@{/employer/job/post}" th:object="${newJob}" method="post">
+                <div class="form-group">
+                    <label for="title">Job Title</label>
+                    <input type="text" id="title" th:field="*{title}" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label for="description">Description</label>
+                    <textarea id="description" th:field="*{description}" class="form-control" rows="4" required></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="skillsRequired">Skills Required</label>
+                    <input type="text" id="skillsRequired" th:field="*{skillsRequired}" class="form-control" placeholder="e.g. Java, Spring, React" required>
+                </div>
+                <div class="form-group">
+                    <label for="salary">Salary ($)</label>
+                    <input type="number" step="0.01" id="salary" th:field="*{salary}" class="form-control" required>
+                </div>
+                <button type="submit" class="btn" style="width: 100%;">Post Job</button>
+            </form>
+        </div>
+
+        <!-- Listed Jobs -->
+        <div class="glass-container" style="flex: 2; min-width: 400px; padding: 1.5rem;">
+            <h3 style="margin-bottom: 1.5rem;">Your Posted Jobs</h3>
+            <div style="overflow-x: auto;">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Title</th>
+                            <th>Posted Date</th>
+                            <th>Applicants</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="job : ${jobs}">
+                            <td th:text="${job.title}">Job Title</td>
+                            <td th:text="${#temporals.format(job.postedAt, 'dd MMM yyyy')}">Date</td>
+                            <td><span class="status-badge" style="background: rgba(255,255,255,0.2); color: white;" th:text="${#lists.size(job.applications)}">0</span></td>
+                            <td>
+                                <a th:href="@{'/employer/job/' + ${job.id} + '/applicants'}" class="btn" style="padding: 0.4rem 0.8rem; font-size: 0.85rem;">View Applicants</a>
+                            </td>
+                        </tr>
+                        <tr th:if="${#lists.isEmpty(jobs)}">
+                            <td colspan="4" style="text-align: center; color: rgba(255,255,255,0.7);">No jobs posted yet.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+</body>
+</html>
